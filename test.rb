@@ -2,7 +2,7 @@
 # $Id: test.rb 244 2009-02-01 08:43:39Z tommy $
 
 require "test/unit"
-require "./mysql.o"
+require "ext/mysql"
 
 class TC_Mysql < Test::Unit::TestCase
   def setup()
@@ -16,7 +16,7 @@ class TC_Mysql < Test::Unit::TestCase
   end
 
   def test_version()
-    assert_equal(20801, Mysql::VERSION)
+    assert_equal(20802, Mysql::VERSION)
   end
 
   def test_init()
@@ -1196,7 +1196,9 @@ class TC_MysqlStmt2 < Test::Unit::TestCase
       @s.execute
       assert_equal([nil], @s.fetch)
       assert_equal([""], @s.fetch)
-      assert_equal(["abc"], @s.fetch)
+      row = @s.fetch
+      assert_equal(Encoding.default_external, row[0].encoding) if RUBY_VERSION =~ /1.9/
+      assert_equal(["abc"], row)
       assert_equal(["def"], @s.fetch)
       assert_equal(["abc"], @s.fetch)
       assert_equal(["def"], @s.fetch)
@@ -1233,6 +1235,7 @@ class TC_MysqlStmt2 < Test::Unit::TestCase
         case c
         when 0
           assert_equal([1,"abc",Mysql::Time.new(1970,12,24,23,59,05)], a)
+          assert_equal(Encoding.default_external, a[1].encoding) if RUBY_VERSION =~ /1.9/
         when 1
           assert_equal([2,"def",Mysql::Time.new(2112,9,3,12,34,56)], a)
         when 2

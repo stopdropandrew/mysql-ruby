@@ -13,7 +13,6 @@ def die(message)
   exit 1
 end
 
-
 if /mswin32/ =~ RUBY_PLATFORM
   inc, lib = dir_config('mysql')
   #exit 1 unless have_library("libmysql")
@@ -108,5 +107,7 @@ File.open('error_const.h', 'w') do |f|
     f.puts "    rb_define_mysql_const(#{s});"
   end
 end
+
+$CPPFLAGS += " -DRUBY19" if RUBY_VERSION =~ /1.9/
 
 create_makefile("mysql")
